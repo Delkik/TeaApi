@@ -6,7 +6,7 @@ The store and tea tables remained the same. However, the idea behind it changed.
 ### Endpoints
 - **GET** *api/store*
 - **POST** *api/store*
-- **PUT** *api/store/{id}*
+- **PUT** *api/store/{id}/{quantity}*
 
 ### Sample Request Bodies
 - None

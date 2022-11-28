@@ -22,9 +22,9 @@ namespace TeaApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Response>> GetStores()
+        public async Task<ActionResult<Response<Store>>> GetStores()
         {
-            Response response = new();
+            Response<Store> response = new();
             if (_context.Stores == null)
             {
                 response.StatusCode = 404;
@@ -34,16 +34,16 @@ namespace TeaApi.Controllers
 
             response.StatusCode = 200;
             response.StatusDescription = "OK";
-            response.Stores = await _context.Stores.ToListAsync();
+            response.Data = await _context.Stores.ToListAsync();
             return response;
         }
 
-        // POST: api/stores
+        // POST: api/stores/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Response>> PostStore(Store store)
+        [HttpPost("{id}")]
+        public async Task<ActionResult<Response<Store>>> PostStore(int id, Store store)
         {
-            Response response = new();
+            Response<Store> response = new();
             if (_context.Stores == null)
             {
                 response.StatusCode = 400;
@@ -51,19 +51,25 @@ namespace TeaApi.Controllers
                 return response;
                 /*return Problem("Entity set 'TeaAPIDbContext.Stores'  is null."); // replace*/
             }
+            if (id != store.StoreId)
+            {
+                response.StatusCode = 400;
+                response.StatusDescription = "Bad Request";
+                return response;
+            }
             _context.Stores.Add(store);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetStores", new { id = store.StoreId }, store);
         }
 
-        // PUT: api/stores/5
+        // PUT: api/stores/5/7
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Response>> PutStore(int id, Store store)
+        [HttpPut("{id}/{quantity}")]
+        public async Task<ActionResult<Response<Store>>> PutStore(int id, int quantity, Store store)
         {
-            Response response = new();
-            if (id != store.StoreId)
+            Response<Store> response = new();
+            if (id != store.StoreId || quantity != store.Quantity)
             {
                 response.StatusCode = 400;
                 response.StatusDescription = "Bad Request";
